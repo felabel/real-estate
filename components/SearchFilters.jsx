@@ -10,10 +10,23 @@ import { filterData, getFilterValues } from '../utils/filterData';
 import React from 'react'
 
 const SearchFilters = () => {
+    const router = useRouter();
+
     const [filters, setFilters] = useState(filterData);
 
-    const searchProperties = (getFilterValues) => {
+    const searchProperties = (filterValues) => {
+      const path = router.pathname;
+      const { query } = router;
 
+      const values = getFilterValues(filterValues);
+      values.forEach((item) => {
+        if(item.value && filterValues?.[item.name]){
+          query[item.name] = item.value
+        }
+        
+      })
+
+      router.push({ pathname: path, query})
     }
     // console.log({filterData})
   return (
@@ -23,8 +36,14 @@ const SearchFilters = () => {
         
         <Box key={filter.queryName}>
           <Select 
-          onChange={(e) => searchProperties({ [filter.queryName]: e.target.value })} placeholder={filter.placeholder} 
-          w='fit-content' p='2' >
+            onChange={(e) => searchProperties({ [filter.queryName]: e.target.value })} placeholder={filter.placeholder} 
+            w='fit-content' p='2' >
+              {filter?.items?.map((item) => (
+                <option value={item.value} key={item.value}>
+                  {item.name}
+                </option>
+              ))}
+            
 
 
           </Select>
